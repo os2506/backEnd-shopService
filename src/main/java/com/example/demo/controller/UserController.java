@@ -31,128 +31,110 @@ import com.example.demo.service.UserDetailsImpl;
 import java.util.HashMap;
 import java.util.Map;
 
-
 @RestController
 @CrossOrigin("*")
 @RequestMapping("/users")
 public class UserController {
-    
-    @Autowired
-    AuthenticationManager authenticationManager;
-    
-    @Autowired
-    UserRepository userRepository;
-    
-    @Autowired
-    private BCryptPasswordEncoder passwordEncoder;
-    
-    //@Autowired
-    //JwtUtils jwtUtils;
-    
-    
-    @Autowired
-    JwtTokenProvider jwt;
-    
-    @Autowired
-    UtilisateurService usrService;
 
+	@Autowired
+	AuthenticationManager authenticationManager;
 
-   
-    @PostMapping("/login")
-    public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
+	@Autowired
+	UserRepository userRepository;
 
-        Authentication authentication = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
+	@Autowired
+	private BCryptPasswordEncoder passwordEncoder;
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+	@Autowired
+	JwtTokenProvider jwt;
 
-        UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
-        
-        String token = JwtTokenProvider.generateToken(userDetails.getUsername());
-        	
-        List<String> roles = userDetails.getAuthorities().stream()
-                .map(item -> item.getAuthority())
-                .collect(Collectors.toList());
+	@Autowired
+	UtilisateurService usrService;
 
-        UserInfoResponse userInfoResponse = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(), userDetails.getEmail(), roles);
-        userInfoResponse.setToken(token);
+	@PostMapping("/login")
+	public ResponseEntity<?> login(@Valid @RequestBody LoginRequest loginRequest) {
 
-        return ResponseEntity.ok().body(userInfoResponse);
-    }
+		Authentication authentication = authenticationManager.authenticate(
+				new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword()));
 
+		SecurityContextHolder.getContext().setAuthentication(authentication);
 
-    
-    
-    
-    @PostMapping("/register")
-    public ResponseEntity<?> register(@RequestBody Utilisateur userDTO) {
-    	
-        // Create a new user entity from the DTO
-    	Utilisateur user = new Utilisateur();
-    	
-    	String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
-    	
-        user.setUsername(userDTO.getUsername());
-        user.setPassword(encodedPassword);
-        user.setConfirmPassword(userDTO.getConfirmPassword());
-        user.setEmail(userDTO.getEmail());
-        user.setSubscribe(userDTO.getSubscribe());
-        user.setCity(userDTO.getCity());
-        user.setState(userDTO.getCity());
-        user.setPostalCode(userDTO.getPostalCode());
+		UserDetailsImpl userDetails = (UserDetailsImpl) authentication.getPrincipal();
 
+		String token = JwtTokenProvider.generateToken(userDetails.getUsername());
 
-        // Register the user
-        Utilisateur registeredUser = usrService.saveUser(user);
-        		
+		List<String> roles = userDetails.getAuthorities().stream().map(item -> item.getAuthority())
+				.collect(Collectors.toList());
 
-        // Return a success response with the registered user's information
-        return ResponseEntity.ok(registeredUser);
-    }
-    
-    @PostMapping("/recover")
-    public ResponseEntity<?> validEmail(@Valid @RequestBody RecoverRequest recoverRequest) {
-        Optional<Utilisateur> user = usrService.findUserByEmail(recoverRequest.getEmail());
-        
-    	Map<String, String> response = new HashMap<>();
-    			
-        if (user.isPresent()) {
-            //return ResponseEntity.ok("User Exist in DB");
+		UserInfoResponse userInfoResponse = new UserInfoResponse(userDetails.getId(), userDetails.getUsername(),
+				userDetails.getEmail(), roles);
+		userInfoResponse.setToken(token);
 
-        	response.put("message", "User exists!");
+		return ResponseEntity.ok().body(userInfoResponse);
+	}
 
-        	// Return the ResponseEntity with JSON response
-        	return ResponseEntity.status(HttpStatus.OK).body(response);
-            
-        } else {
-        	
-        	response.put("message", "User not found!!");
+	@PostMapping("/register")
+	public ResponseEntity<?> register(@RequestBody Utilisateur userDTO) {
 
-        	// Return the ResponseEntity with JSON response
-        	return ResponseEntity.status(HttpStatus.OK).body(response);
-        }
-    }
-    
-    @PutMapping("/update-password")
-    public ResponseEntity<?> updatePassword(@Valid @RequestBody RecoverPwdRequest recoverPwdRequest) {
-        Optional<Utilisateur> userOptional = usrService.findUserByEmail(recoverPwdRequest.getEmail());
-        Map<String, String> response = new HashMap<>();
-        if (userOptional.isPresent()) {
-        	Utilisateur user = userOptional.get();
-        	
-        	String encodedNewPassword = passwordEncoder.encode(recoverPwdRequest.getNewPassword());
-        	
-            user.setPassword(encodedNewPassword);
-            user.setConfirmPassword(encodedNewPassword);
-            userRepository.save(user);
-            response.put("message", "Password updated successfully");
-            // Return the ResponseEntity with JSON response
-        	return ResponseEntity.status(HttpStatus.OK).body(response);
-        } else {
-        	response.put("message", "Error updated Password");
-            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
-        }
-    }
-    
+		// Create a new user entity from the DTO
+		Utilisateur user = new Utilisateur();
+
+		String encodedPassword = passwordEncoder.encode(userDTO.getPassword());
+
+		user.setUsername(userDTO.getUsername());
+		user.setPassword(encodedPassword);
+		user.setConfirmPassword(userDTO.getConfirmPassword());
+		user.setEmail(userDTO.getEmail());
+		user.setSubscribe(userDTO.getSubscribe());
+		user.setCity(userDTO.getCity());
+		user.setState(userDTO.getState());
+		user.setPostalCode(userDTO.getPostalCode());
+
+		// Register the user
+		Utilisateur registeredUser = usrService.saveUser(user);
+
+		// Return a success response with the registered user's information
+		return ResponseEntity.ok(registeredUser);
+	}
+
+	@PostMapping("/recover")
+	public ResponseEntity<?> validEmail(@Valid @RequestBody RecoverRequest recoverRequest) {
+		Optional<Utilisateur> user = usrService.findUserByEmail(recoverRequest.getEmail());
+
+		Map<String, String> response = new HashMap<>();
+
+		if (user.isPresent()) {
+			response.put("message", "User exists!");
+			// Return the ResponseEntity with JSON response
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("message", "User not found!!");
+			// Return the ResponseEntity with JSON response
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		}
+	}
+
+	@PutMapping("/update-password")
+	public ResponseEntity<?> updatePassword(@Valid @RequestBody RecoverPwdRequest recoverPwdRequest) {
+		Optional<Utilisateur> userOptional = usrService.findUserByEmail(recoverPwdRequest.getEmail());
+		Map<String, String> response = new HashMap<>();
+		if (userOptional.isPresent()) {
+			Utilisateur user = userOptional.get();
+
+			String encodedNewPassword = passwordEncoder.encode(recoverPwdRequest.getNewPassword());
+
+			user.setPassword(encodedNewPassword);
+			user.setConfirmPassword(encodedNewPassword);
+			userRepository.save(user);
+			response.put("message", "Password updated successfully");
+			// Return the ResponseEntity with JSON response
+			return ResponseEntity.status(HttpStatus.OK).body(response);
+		} else {
+			response.put("message", "Error updated Password");
+			return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+		}
+	}
+
 	// recuperation de tous les produits
 	@GetMapping("/")
 	public ResponseEntity<List<Utilisateur>> getAllUsers() {

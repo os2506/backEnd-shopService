@@ -57,10 +57,6 @@ public class JwtUtils {
     ResponseCookie cookie = ResponseCookie.from(jwtCookie, null).path("/api").build();
     return cookie;
   }
-/*
-  public String getUserNameFromJwtToken(String token) {
-    return Jwts.parser().setSigningKey(SecurityParams.SECRET).parseClaimsJws(token).getBody().getSubject();
-  }*/
   
   public String getUserNameFromJwtToken(String token) {
 	    JwtParser jwtParser = Jwts.parserBuilder().setSigningKey(Keys.secretKeyFor(SignatureAlgorithm.HS512)).build();
@@ -86,18 +82,7 @@ public class JwtUtils {
 
     return false;
   }
-  /*
-  public String generateTokenFromUsername(String username) {   
-    return Jwts.builder()
-        .setSubject(username)
-        .setIssuedAt(new Date())
-        .setExpiration(new Date((new Date()).getTime() + jwtExpirationMs))
-        .signWith(SignatureAlgorithm.HS512, jwtSecret)
-        .compact();
-  }*/
   public String generateTokenFromUsername(String username) {
-	  
-	  
 	    return Jwts.builder()
 	        .setSubject(username)
 	        .setIssuedAt(new Date())

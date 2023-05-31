@@ -53,7 +53,44 @@ public class WishListController {
 			return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
 		}
 	}
-
+	
+	
+	@DeleteMapping("/delete")
+	public ResponseEntity<ApiResponse> deleteWishList(@RequestBody Product product,
+			@RequestHeader("Authorization") String token){
+		
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
+		Optional<Utilisateur> OptionalUser = wishListService.getUserFromUsername(usernameSubject);
+		Utilisateur user = OptionalUser.orElse(new Utilisateur());
+		
+		List<WishList> whishCol = wishListService.getAllWishList(user.getId());
+		
+		for (WishList wishlistProduct : whishCol) {
+			if (wishlistProduct.getProduct().getId().equals(product.getId())) {
+				wishListService.deleteWishlist(wishlistProduct);				
+			}
+		}
+		
+		return ResponseEntity.ok(new ApiResponse(true, "Product deleted with succes from the wishlist"));	
+	}
+	
+	
+	@DeleteMapping("/deleteAll")
+	public ResponseEntity<ApiResponse> deleteAllWishlist(@RequestHeader("Authorization") String token){
+		
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
+		Optional<Utilisateur> OptionalUser = wishListService.getUserFromUsername(usernameSubject);
+		Utilisateur user = OptionalUser.orElse(new Utilisateur());
+		
+		List<WishList> whishCol = wishListService.getAllWishList(user.getId());
+		
+		for (WishList wishlistProduct : whishCol) {
+			wishListService.deleteWishlist(wishlistProduct);
+		}
+		
+		return ResponseEntity.ok(new ApiResponse(true, "All produts deleted from the wishlist"));	
+	}
+	
 	@PostMapping("/add")
 	public ResponseEntity<ApiResponse> addWishlist(@RequestBody Product product,
 			@RequestHeader("Authorization") String token) {

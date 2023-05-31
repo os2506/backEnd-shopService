@@ -15,8 +15,6 @@ public class ProductDto {
     private @NotNull Integer quantity;
     private @NotNull String inventoryStatus;
     private @NotNull Integer rating;
-    
-    //private @NotNull Integer categoryId;
 
     public ProductDto(Product product) {
         this.setId(product.getId());

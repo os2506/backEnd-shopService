@@ -26,9 +26,18 @@ public class WishListService {
     public void createWishlist(WishList wishList) {
         wishListRepository.save(wishList);
     }
+    
+    public void deleteWishlist(WishList wishList) {
+        wishListRepository.delete(wishList);
+    }
 
     public List<WishList> readWishList(Long userId) {
         return wishListRepository.findAllByUserIdOrderByCreatedDateDesc(userId);
+    }
+    
+    
+    public List<WishList> deleteWishListById(Long userId) {
+        return wishListRepository.deleteByUser(userId);
     }
     
     public Optional<Utilisateur> getUserFromUsername(String username) {

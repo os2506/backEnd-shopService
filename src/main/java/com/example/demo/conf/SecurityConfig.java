@@ -77,6 +77,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             		"/products/addAllProductsFromJson/**",
             		"/products/categories/**",
             		"/wishlists/add/**",
+            		"/wishlists/delete/**",
+            		"/wishlists/deleteAll/**",
             		"/carts/add/**",
             		"/carts/update/**",
             		"/carts/delete/**"

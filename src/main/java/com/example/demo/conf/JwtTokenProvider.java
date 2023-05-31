@@ -3,26 +3,17 @@ package com.example.demo.conf;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-
 import java.util.Date;
-
 import javax.crypto.SecretKey;
-
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.security.Keys;
 
-import java.security.Key;
-
 @Component
 public class JwtTokenProvider {
-	
-     //private static final Key SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
     
     static SecretKey SECRET_KEY = Keys.secretKeyFor(SignatureAlgorithm.HS512);
-    
-    //private static final Key SECRET_KEY_VERIFIED = Keys.secretKeyFor(SignatureAlgorithm.HS256);
-    
-    private static final long EXPIRATION_TIME = 86400000; // 24 hours
+       
+    private static final long EXPIRATION_TIME = 86400000; //24hr
 
     // Generate a JWT token for the given username
     public static String generateToken(String username) {

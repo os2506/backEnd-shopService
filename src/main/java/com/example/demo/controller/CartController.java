@@ -35,7 +35,7 @@ public class CartController {
 	public ResponseEntity<ApiResponse> addToCart(@RequestBody AddToCartDto addToCartDto,
 			@RequestParam("token") String token) throws ProductNotExistException {
 
-		String usernameSubject = jwt.getUsernameFromToken(token);
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
 
 		Optional<Utilisateur> OptionalUser = cartService.getUserFromUsername(usernameSubject);
 
@@ -49,7 +49,7 @@ public class CartController {
 
 	@GetMapping("/")
 	public ResponseEntity<CartDto> getCartItems(@RequestParam("token") String token) {
-		String usernameSubject = jwt.getUsernameFromToken(token);
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
 
 		Optional<Utilisateur> OptionalUser = cartService.getUserFromUsername(usernameSubject);
 
@@ -63,7 +63,7 @@ public class CartController {
 	public ResponseEntity<ApiResponse> updateCartItem(@RequestBody @Valid AddToCartDto cartDto,
 			@RequestParam("token") String token) throws  ProductNotExistException {
 		
-		String usernameSubject = jwt.getUsernameFromToken(token);
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
 
 		Optional<Utilisateur> OptionalUser = cartService.getUserFromUsername(usernameSubject);
 
@@ -79,7 +79,7 @@ public class CartController {
 
 		// int userId = authenticationService.getUser(token).getId();
 
-		String usernameSubject = jwt.getUsernameFromToken(token);
+		String usernameSubject = JwtTokenProvider.getUsernameFromToken(token);
 
 		Optional<Utilisateur> OptionalUser = cartService.getUserFromUsername(usernameSubject);
 
