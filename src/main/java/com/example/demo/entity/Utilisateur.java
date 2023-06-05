@@ -44,11 +44,7 @@ public class Utilisateur implements Serializable {
 	private String postalCode;
 	
 	@ManyToMany(fetch = FetchType.EAGER)
-	private Collection<AppRoles> roles=new ArrayList<>();	
-	
-	public Utilisateur() {
-		super();
-	}
+	private Collection<AppRoles> roles=new ArrayList<>();
 	
 	public Long getId() {
 		return id;
