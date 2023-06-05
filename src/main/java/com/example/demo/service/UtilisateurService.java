@@ -30,6 +30,10 @@ public class UtilisateurService {
 		userRepository.deleteById(id);
 	}
 	
+	public Optional<Utilisateur> findUserById(Long id) {
+        return userRepository.findById(id);
+    }
+	
 	 public Optional<Utilisateur> findUserByUsername(String username) {
 	        return userRepository.findByUsername(username);
 	    }

@@ -74,6 +74,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
             		"/users/register/**",
             		"/users/recover/**",
             		"/users/update-password/**",
+            		"/users/**",
             		"/products/addAllProductsFromJson/**",
             		"/products/categories/**",
             		"/wishlists/add/**",
