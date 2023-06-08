@@ -15,6 +15,7 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PatchMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
@@ -22,15 +23,20 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.example.demo.apiCommon.RecoverPwdRequest;
+import com.example.demo.apiCommon.UpdateUserRequest;
 import com.example.demo.apiCommon.UserInfoResponse;
 import com.example.demo.conf.JwtTokenProvider;
+import com.example.demo.entity.AppRoles;
 import com.example.demo.entity.DeleteUserRequest;
 import com.example.demo.entity.LoginRequest;
 import com.example.demo.entity.RecoverRequest;
 import com.example.demo.entity.Utilisateur;
 import com.example.demo.repo.UserRepository;
 import com.example.demo.service.UtilisateurService;
+import com.example.demo.service.AppRolesService;
 import com.example.demo.service.UserDetailsImpl;
+
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,6 +46,9 @@ import java.util.Map;
 @RequestMapping("/users")
 public class UserController {
     
+	@Autowired
+	AppRolesService appRolesService;
+	
     @Autowired
     AuthenticationManager authenticationManager;
     
@@ -156,7 +165,6 @@ public class UserController {
         }
     }
     
-	// recuperation de tous les produits
 	@GetMapping("/")
 	public ResponseEntity<List<Utilisateur>> getAllUsers() {
 		List<Utilisateur> users = usrService.getAllUsers();
@@ -172,12 +180,39 @@ public class UserController {
     	// Check if user exists
     	Optional<Utilisateur> user = usrService.findUserById(id);
 		
-		if (user == null) {
+		if (user.isEmpty()) {
 			return ResponseEntity.notFound().build();
 		}
 
 		// Delete user
 		usrService.deleteUserById(id);
 		return ResponseEntity.noContent().build();
+    }
+	
+	@PatchMapping("/{id}")
+    public ResponseEntity<Utilisateur> updateUser(@PathVariable Long id, @Valid @RequestBody UpdateUserRequest updateUserRequest) {
+    	
+    	// Check if user exists
+    	Optional<Utilisateur> user = usrService.findUserById(id);
+		
+		if (user.isEmpty()) {
+			return ResponseEntity.notFound().build();
+		}
+		
+		Collection<AppRoles> appRoles = this.appRolesService.getAllAppRoles().stream()
+				.filter((appRole) -> updateUserRequest.getRoles().contains(appRole.getRoleName()))
+				.collect(Collectors.toList());
+		
+		Utilisateur userToUpdate = user.get();
+		userToUpdate.setCity(updateUserRequest.getCity());
+		userToUpdate.setEmail(updateUserRequest.getEmail());
+		userToUpdate.setPostalCode(updateUserRequest.getPostalCode());
+		userToUpdate.setRoles(appRoles);
+		userToUpdate.setState(updateUserRequest.getState());
+
+		// Save user updated
+		usrService.saveUser(userToUpdate);
+		
+		return ResponseEntity.ok(userToUpdate);
     }
 }
