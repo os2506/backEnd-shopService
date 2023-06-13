@@ -27,7 +27,7 @@ import com.example.demo.apiCommon.UpdateUserRequest;
 import com.example.demo.apiCommon.UserInfoResponse;
 import com.example.demo.conf.JwtTokenProvider;
 import com.example.demo.entity.AppRoles;
-import com.example.demo.entity.DeleteUserRequest;
+//import com.example.demo.entity.DeleteUserRequest;
 import com.example.demo.entity.LoginRequest;
 import com.example.demo.entity.RecoverRequest;
 import com.example.demo.entity.Utilisateur;
@@ -179,14 +179,13 @@ public class UserController {
     	
     	// Check if user exists
     	Optional<Utilisateur> user = usrService.findUserById(id);
-		
-		if (user.isEmpty()) {
+    	
+    	if (user.isPresent()) {
+    		usrService.deleteUserById(id);
+    		return ResponseEntity.noContent().build(); 
+    	}
+	
 			return ResponseEntity.notFound().build();
-		}
-
-		// Delete user
-		usrService.deleteUserById(id);
-		return ResponseEntity.noContent().build();
     }
 	
 	@PatchMapping("/{id}")
@@ -195,24 +194,25 @@ public class UserController {
     	// Check if user exists
     	Optional<Utilisateur> user = usrService.findUserById(id);
 		
-		if (user.isEmpty()) {
-			return ResponseEntity.notFound().build();
+		if (user.isPresent()) {
+			
+			Collection<AppRoles> appRoles = this.appRolesService.getAllAppRoles().stream()
+					.filter((appRole) -> updateUserRequest.getRoles().contains(appRole.getRoleName()))
+					.collect(Collectors.toList());
+			
+			Utilisateur userToUpdate = user.get();
+			userToUpdate.setCity(updateUserRequest.getCity());
+			userToUpdate.setEmail(updateUserRequest.getEmail());
+			userToUpdate.setPostalCode(updateUserRequest.getPostalCode());
+			userToUpdate.setRoles(appRoles);
+			userToUpdate.setState(updateUserRequest.getState());
+
+			// Save user updated
+			usrService.saveUser(userToUpdate);
+			return ResponseEntity.ok(userToUpdate);
 		}
 		
-		Collection<AppRoles> appRoles = this.appRolesService.getAllAppRoles().stream()
-				.filter((appRole) -> updateUserRequest.getRoles().contains(appRole.getRoleName()))
-				.collect(Collectors.toList());
-		
-		Utilisateur userToUpdate = user.get();
-		userToUpdate.setCity(updateUserRequest.getCity());
-		userToUpdate.setEmail(updateUserRequest.getEmail());
-		userToUpdate.setPostalCode(updateUserRequest.getPostalCode());
-		userToUpdate.setRoles(appRoles);
-		userToUpdate.setState(updateUserRequest.getState());
-
-		// Save user updated
-		usrService.saveUser(userToUpdate);
-		
-		return ResponseEntity.ok(userToUpdate);
+		return ResponseEntity.notFound().build();
+	
     }
 }

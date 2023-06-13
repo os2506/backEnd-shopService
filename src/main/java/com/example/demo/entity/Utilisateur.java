@@ -19,8 +19,6 @@ import java.util.Collection;
 
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class Utilisateur implements Serializable {
 	@Id @GeneratedValue(strategy = GenerationType.AUTO)
@@ -45,6 +43,27 @@ public class Utilisateur implements Serializable {
 	
 	@ManyToMany(fetch = FetchType.EAGER)
 	private Collection<AppRoles> roles=new ArrayList<>();
+	
+	
+	public Utilisateur() {
+		
+	}
+	
+	public Utilisateur(Long id, String username, String password, String confirmPassword, String email,
+			Boolean subscribe, String city, String state, String postalCode, Collection<AppRoles> roles) {
+		//super();
+		this.id = id;
+		this.username = username;
+		this.password = password;
+		this.confirmPassword = confirmPassword;
+		this.email = email;
+		this.subscribe = subscribe;
+		this.city = city;
+		this.state = state;
+		this.postalCode = postalCode;
+		this.roles = roles;
+	}
+	
 	
 	public Long getId() {
 		return id;

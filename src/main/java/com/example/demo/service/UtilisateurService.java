@@ -10,9 +10,13 @@ import com.example.demo.repo.UserRepository;
 @Service
 public class UtilisateurService {
 	
-	@Autowired
 	private UserRepository userRepository;
     
+	@Autowired
+	public UtilisateurService(UserRepository userRepository) {
+		this.userRepository=userRepository;
+	}
+
 	public List<Utilisateur> getAllUsers() {
 		return userRepository.findAll();
 	}
@@ -21,14 +25,27 @@ public class UtilisateurService {
 		Optional<Utilisateur> usr = userRepository.findById(id);
 		return usr.orElse(null);
 	}
+	
+	public String GetEmailAndUsername(Long userId) {
+		Optional<Utilisateur> user = userRepository.findById(userId);
+        if (user != null) {
+            return user.get().getEmail() + " " + user.get().getUsername();
+        } else {
+            return "";
+        }
+    }
 
 	public Utilisateur saveUser(Utilisateur usr) {
-		return userRepository.save(usr);
+		return userRepository.saveUser(usr);
 	}
 
 	public void deleteUserById(Long id) {
 		userRepository.deleteById(id);
 	}
+	
+	public int getUserCount() {
+	        return userRepository.getUserCount();
+	    }
 	
 	public Optional<Utilisateur> findUserById(Long id) {
         return userRepository.findById(id);
