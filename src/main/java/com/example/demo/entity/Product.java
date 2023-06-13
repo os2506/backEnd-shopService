@@ -19,8 +19,6 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 @Entity
 @Data
-@NoArgsConstructor
-@AllArgsConstructor
 @JsonIgnoreProperties(ignoreUnknown = true)
 @Table(name = "products")
 public class Product {
@@ -54,6 +52,30 @@ public class Product {
 	@JsonIgnore
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "product")
 	private List<Cart> carts;
+	
+	
+
+	public Product() {
+	
+	}
+	
+
+	public Product(Long id, String code, String name, String description, String image, Double price, String category,
+			Integer quantity, String inventoryStatus, Integer rating, List<WishList> wishListList, List<Cart> carts) {
+		//super();
+		this.id = id;
+		this.code = code;
+		this.name = name;
+		this.description = description;
+		this.image = image;
+		this.price = price;
+		this.category = category;
+		this.quantity = quantity;
+		this.inventoryStatus = inventoryStatus;
+		this.rating = rating;
+		this.wishListList = wishListList;
+		this.carts = carts;
+	}
 
 	public Long getId() {
 		return id;
